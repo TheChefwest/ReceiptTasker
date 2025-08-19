@@ -1,41 +1,41 @@
+# crud.py
 from typing import List, Optional
 from sqlmodel import select
-from .models import Task
-from .database import get_session
+from models import Task
+from database import session_scope
 
 def create_task(task: Task) -> Task:
-    with get_session() as s:
+    with session_scope() as s:
         s.add(task)
         s.commit()
         s.refresh(task)
         return task
 
+def list_tasks() -> List[Task]:
+    with session_scope() as s:
+        return list(s.exec(select(Task)).all())
+
 def get_task(task_id: int) -> Optional[Task]:
-    with get_session() as s:
+    with session_scope() as s:
         return s.get(Task, task_id)
 
-def list_tasks() -> List[Task]:
-    with get_session() as s:
-        return list(s.exec(select(Task)))
-
-def update_task(task_id: int, **fields) -> Optional[Task]:
-    with get_session() as s:
-        t = s.get(Task, task_id)
-        if not t:
+def update_task(task_id: int, **data) -> Optional[Task]:
+    with session_scope() as s:
+        obj = s.get(Task, task_id)
+        if not obj:
             return None
-        for k, v in fields.items():
-            if v is not None:
-                setattr(t, k, v)
-        s.add(t)
+        for k, v in data.items():
+            setattr(obj, k, v)
+        s.add(obj)
         s.commit()
-        s.refresh(t)
-        return t
+        s.refresh(obj)
+        return obj
 
 def delete_task(task_id: int) -> bool:
-    with get_session() as s:
-        t = s.get(Task, task_id)
-        if not t:
+    with session_scope() as s:
+        obj = s.get(Task, task_id)
+        if not obj:
             return False
-        s.delete(t)
+        s.delete(obj)
         s.commit()
         return True

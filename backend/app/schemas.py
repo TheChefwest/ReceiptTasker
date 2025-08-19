@@ -1,6 +1,7 @@
 from typing import Optional, List
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
+from utils import to_aware
 
 class TaskCreate(BaseModel):
     title: str
@@ -10,6 +11,17 @@ class TaskCreate(BaseModel):
     rrule: Optional[str] = ""
     auto_print: Optional[bool] = True
     is_active: Optional[bool] = True
+
+    @field_validator("start_at", "until", mode="before")
+    @classmethod
+    def _make_aware(cls, v):
+        if v is None:
+            return v
+        if isinstance(v, str):
+            # Let Pydantic parse first; it yields datetime (maybe naive)
+            from datetime import datetime as _dt
+            v = _dt.fromisoformat(v.replace("Z", "+00:00")) if "Z" in v else _dt.fromisoformat(v)
+        return to_aware(v)
 
 class TaskRead(BaseModel):
     id: int
@@ -30,6 +42,16 @@ class TaskUpdate(BaseModel):
     rrule: Optional[str] = None
     auto_print: Optional[bool] = None
     is_active: Optional[bool] = None
+
+    @field_validator("start_at", "until", mode="before")
+    @classmethod
+    def _make_aware(cls, v):
+        if v is None:
+            return v
+        from datetime import datetime as _dt
+        if isinstance(v, str):
+            v = _dt.fromisoformat(v.replace("Z", "+00:00")) if "Z" in v else _dt.fromisoformat(v)
+        return to_aware(v)
 
 class ImportPayload(BaseModel):
     tasks: List[TaskCreate]
