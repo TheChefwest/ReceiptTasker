@@ -11,6 +11,7 @@ class TaskCreate(BaseModel):
     rrule: Optional[str] = ""
     auto_print: Optional[bool] = True
     is_active: Optional[bool] = True
+    category: Optional[str] = "other"
 
     @field_validator("start_at", "until", mode="before")
     @classmethod
@@ -33,6 +34,7 @@ class TaskRead(BaseModel):
     auto_print: bool
     is_active: bool
     last_fired_at: Optional[datetime]
+    category: str
 
 class TaskUpdate(BaseModel):
     title: Optional[str] = None
@@ -42,6 +44,7 @@ class TaskUpdate(BaseModel):
     rrule: Optional[str] = None
     auto_print: Optional[bool] = None
     is_active: Optional[bool] = None
+    category: Optional[str] = None
 
     @field_validator("start_at", "until", mode="before")
     @classmethod

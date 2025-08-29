@@ -1,6 +1,6 @@
 # crud.py
 from typing import List, Optional
-from sqlmodel import select
+from sqlmodel import select, or_
 from models import Task, BlackoutPeriod
 from database import session_scope
 
@@ -11,9 +11,25 @@ def create_task(task: Task) -> Task:
         s.refresh(task)
         return task
 
-def list_tasks() -> List[Task]:
+def list_tasks(search: Optional[str] = None, category: Optional[str] = None) -> List[Task]:
     with session_scope() as s:
-        return list(s.exec(select(Task)).all())
+        query = select(Task)
+        
+        # Add search filter
+        if search:
+            search_term = f"%{search}%"
+            query = query.where(
+                or_(
+                    Task.title.ilike(search_term),
+                    Task.description.ilike(search_term)
+                )
+            )
+        
+        # Add category filter
+        if category and category != "all":
+            query = query.where(Task.category == category)
+            
+        return list(s.exec(query).all())
 
 def get_task(task_id: int) -> Optional[Task]:
     with session_scope() as s:

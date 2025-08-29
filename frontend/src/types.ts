@@ -8,6 +8,7 @@ export type Task = {
   auto_print: boolean;
   is_active: boolean;
   last_fired_at?: string | null;
+  category: string;
 };
 
 export type TaskCreate = Omit<Task, 'id' | 'last_fired_at'>;

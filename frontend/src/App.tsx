@@ -7,19 +7,29 @@ import TaskList from './components/TaskList'
 import ImportJson from './components/ImportJson'
 import BlackoutPeriods from './components/BlackoutPeriods'
 import ThemeToggle from './components/ThemeToggle'
+import SearchFilter from './components/SearchFilter'
 
 export default function App() {
   const [tasks, setTasks] = React.useState<Task[]>([])
+  const [searchQuery, setSearchQuery] = React.useState('')
+  const [selectedCategory, setSelectedCategory] = React.useState('all')
 
-  const load = async () => {
-    const { data } = await api.get<Task[]>('/tasks')
+  const load = async (search?: string, category?: string) => {
+    const params = new URLSearchParams()
+    if (search) params.append('search', search)
+    if (category && category !== 'all') params.append('category', category)
+    
+    const { data } = await api.get<Task[]>(`/tasks?${params.toString()}`)
     setTasks(data)
   }
-  React.useEffect(() => { load() }, [])
+  
+  React.useEffect(() => { 
+    load(searchQuery, selectedCategory) 
+  }, [searchQuery, selectedCategory])
 
   const create = async (t: TaskCreate) => {
     await api.post('/tasks', t)
-    await load()
+    await load(searchQuery, selectedCategory)
   }
 
   return (
@@ -35,16 +45,22 @@ export default function App() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2 space-y-6">
+            <SearchFilter 
+              searchQuery={searchQuery}
+              selectedCategory={selectedCategory}
+              onSearchChange={setSearchQuery}
+              onCategoryChange={setSelectedCategory}
+            />
             <CalendarView tasks={tasks} />
-            <TaskList tasks={tasks} refresh={load} />
+            <TaskList tasks={tasks} refresh={() => load(searchQuery, selectedCategory)} />
           </div>
           <div className="space-y-6">
             <div className="rounded-2xl bg-white dark:bg-gray-800 shadow p-4">
               <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">New task</h3>
               <TaskForm onSubmit={create} />
             </div>
-            <BlackoutPeriods refresh={load} />
-            <ImportJson onDone={load} />
+            <BlackoutPeriods refresh={() => load(searchQuery, selectedCategory)} />
+            <ImportJson onDone={() => load(searchQuery, selectedCategory)} />
           </div>
         </div>
 

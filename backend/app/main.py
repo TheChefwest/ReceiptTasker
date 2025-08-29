@@ -64,8 +64,8 @@ def health():
     }
 
 @API.get("/tasks", response_model=List[TaskRead])
-def api_list_tasks():
-    return list_tasks()
+def api_list_tasks(search: Optional[str] = None, category: Optional[str] = None):
+    return list_tasks(search=search, category=category)
 
 @API.post("/tasks", response_model=TaskRead)
 def api_create_task(payload: TaskCreate):

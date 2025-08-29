@@ -1,5 +1,6 @@
 import React from 'react'
 import { Task, TaskCreate } from '../types'
+import { TASK_CATEGORIES, getCategoryById } from '../utils/categories'
 
 type Props = {
   value?: Partial<Task>
@@ -13,14 +14,29 @@ export default function TaskForm({ value, onSubmit }: Props) {
   const [rrule, setRrule] = React.useState(value?.rrule || '')
   const [autoPrint, setAutoPrint] = React.useState(value?.auto_print ?? true)
   const [isActive, setIsActive] = React.useState(value?.is_active ?? true)
+  const [category, setCategory] = React.useState(value?.category || 'other')
 
   return (
     <form className="space-y-3" onSubmit={e=>{e.preventDefault(); onSubmit({
-      title, description, start_at: new Date(startAt).toISOString(), until: null, rrule, auto_print: autoPrint, is_active: isActive
+      title, description, start_at: new Date(startAt).toISOString(), until: null, rrule, auto_print: autoPrint, is_active: isActive, category
     })}}>
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
         <input className="mt-1 w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-2" value={title} onChange={e=>setTitle(e.target.value)} required />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Location</label>
+        <select 
+          value={category} 
+          onChange={e=>setCategory(e.target.value)}
+          className="mt-1 w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-2"
+        >
+          {TASK_CATEGORIES.map(cat => (
+            <option key={cat.id} value={cat.id}>
+              {cat.icon} {cat.name}
+            </option>
+          ))}
+        </select>
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>

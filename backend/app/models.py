@@ -18,6 +18,8 @@ class Task(SQLModel, table=True):
     is_active: bool = True
     # Last time we printed this task (for recurrence progression)
     last_fired_at: Optional[datetime] = None
+    # Task location for organization and color coding
+    category: str = "other"
 
 class BlackoutPeriod(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)

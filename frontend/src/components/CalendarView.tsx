@@ -4,6 +4,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { Calendar } from '@fullcalendar/core'
 import { Task } from '../types'
+import { getCategoryById } from '../utils/categories'
 
 // Lightweight wrapper using FullCalendar via imperative init for Vite simplicity
 
@@ -66,24 +67,47 @@ function parseRrule(rruleStr: string, dtstart: Date, until?: Date | null): Date[
 function generateTaskEvents(tasks: Task[]) {
   const events: Array<{id: string, title: string, start: string}> = []
   
+  // Location color mapping for FullCalendar
+  const getCategoryColor = (categoryId: string) => {
+    const colorMap: Record<string, string> = {
+      'kitchen': '#dc2626',
+      'bathroom': '#2563eb',
+      'bedroom': '#9333ea',
+      'living_room': '#16a34a',
+      'office': '#4f46e5',
+      'shed': '#ea580c',
+      'garden': '#059669',
+      'other': '#6b7280'
+    }
+    return colorMap[categoryId] || colorMap.other
+  }
+
   tasks.forEach(task => {
     const startDate = new Date(task.start_at)
     const untilDate = task.until ? new Date(task.until) : null
+    const category = getCategoryById(task.category)
+    const color = getCategoryColor(task.category)
     
     if (task.rrule) {
       const occurrences = parseRrule(task.rrule, startDate, untilDate)
       occurrences.forEach((date, index) => {
         events.push({
           id: `${task.id}_${index}`,
-          title: task.title,
+          title: `${category.icon} ${task.title}`,
           start: date.toISOString().split('T')[0],
+          backgroundColor: color,
+          borderColor: color,
+          textColor: '#ffffff'
         })
       })
     } else {
       events.push({
         id: String(task.id),
-        title: task.title,
+        title: `${category.icon} ${task.title}`,
         start: startDate.toISOString().split('T')[0],
+        backgroundColor: color,
+        borderColor: color,
+        textColor: '#ffffff'
       })
     }
   })
