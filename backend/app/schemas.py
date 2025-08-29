@@ -53,5 +53,45 @@ class TaskUpdate(BaseModel):
             v = _dt.fromisoformat(v.replace("Z", "+00:00")) if "Z" in v else _dt.fromisoformat(v)
         return to_aware(v)
 
+class BlackoutPeriodCreate(BaseModel):
+    name: Optional[str] = ""
+    start_date: datetime
+    end_date: datetime
+    is_active: Optional[bool] = True
+
+    @field_validator("start_date", "end_date", mode="before")
+    @classmethod
+    def _make_aware(cls, v):
+        if v is None:
+            return v
+        if isinstance(v, str):
+            from datetime import datetime as _dt
+            v = _dt.fromisoformat(v.replace("Z", "+00:00")) if "Z" in v else _dt.fromisoformat(v)
+        return to_aware(v)
+
+class BlackoutPeriodRead(BaseModel):
+    id: int
+    name: str
+    start_date: datetime
+    end_date: datetime
+    is_active: bool
+    created_at: datetime
+
+class BlackoutPeriodUpdate(BaseModel):
+    name: Optional[str] = None
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+    is_active: Optional[bool] = None
+
+    @field_validator("start_date", "end_date", mode="before")
+    @classmethod
+    def _make_aware(cls, v):
+        if v is None:
+            return v
+        from datetime import datetime as _dt
+        if isinstance(v, str):
+            v = _dt.fromisoformat(v.replace("Z", "+00:00")) if "Z" in v else _dt.fromisoformat(v)
+        return to_aware(v)
+
 class ImportPayload(BaseModel):
     tasks: List[TaskCreate]

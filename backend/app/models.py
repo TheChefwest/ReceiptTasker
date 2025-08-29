@@ -18,3 +18,11 @@ class Task(SQLModel, table=True):
     is_active: bool = True
     # Last time we printed this task (for recurrence progression)
     last_fired_at: Optional[datetime] = None
+
+class BlackoutPeriod(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = ""  # Optional name for the blackout period (e.g. "Christmas Holiday")
+    start_date: datetime
+    end_date: datetime
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=datetime.now)

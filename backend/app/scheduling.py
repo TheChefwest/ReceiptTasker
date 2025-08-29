@@ -5,7 +5,7 @@ from dateutil.tz import gettz
 from datetime import datetime
 from typing import Optional
 from models import Task
-from crud import update_task
+from crud import update_task, list_blackout_periods
 from printing import ThermalPrinter
 from utils import now_tz, TZ, to_aware
 
@@ -48,15 +48,38 @@ def schedule_task(task: Task):
     scheduler.add_job(_run_and_reschedule, DateTrigger(run_date=next_run), args=[task.id], id=job_id)
 
 
+def _is_in_blackout_period(check_time: datetime) -> bool:
+    """Check if the given datetime falls within any active blackout period"""
+    blackout_periods = list_blackout_periods()
+    for period in blackout_periods:
+        if not period.is_active:
+            continue
+        start = to_aware(period.start_date)
+        end = to_aware(period.end_date)
+        if start <= check_time <= end:
+            return True
+    return False
+
+
 def _run_and_reschedule(task_id: int):
     from crud import get_task  # local import to avoid cycles
     task = get_task(task_id)
     if not task or not task.is_active:
         return
+    
+    current_time = now_tz()
+    
+    # Check if we're in a blackout period
+    if _is_in_blackout_period(current_time):
+        # Skip printing but still update last_fired_at and reschedule
+        update_task(task.id, last_fired_at=current_time)
+        schedule_task(task)
+        return
+    
     if task.auto_print:
         printer.print_task(task.title, task.description)
     # update last fired
-    update_task(task.id, last_fired_at=now_tz())
+    update_task(task.id, last_fired_at=current_time)
     # schedule next
     schedule_task(task)
 

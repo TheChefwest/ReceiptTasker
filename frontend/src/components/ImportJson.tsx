@@ -10,12 +10,12 @@ export default function ImportJson({ onDone }: { onDone: ()=>void }) {
   }
 
   return (
-    <div className="rounded-2xl bg-white shadow p-4 space-y-2">
+    <div className="rounded-2xl bg-white dark:bg-gray-800 shadow p-4 space-y-2">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Import from JSON</h3>
-        <button onClick={submit} className="px-3 py-1 rounded-lg bg-black text-white">Import</button>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Import from JSON</h3>
+        <button onClick={submit} className="px-3 py-1 rounded-lg bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors">Import</button>
       </div>
-      <textarea value={text} onChange={e=>setText(e.target.value)} className="w-full h-48 rounded-xl border p-2 font-mono text-sm" />
+      <textarea value={text} onChange={e=>setText(e.target.value)} className="w-full h-48 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-2 font-mono text-sm" />
     </div>
   )
 }

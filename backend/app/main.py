@@ -10,9 +10,9 @@ import socket
 
 # ---- local modules (absolute imports) ----
 from database import init_db
-from schemas import TaskCreate, TaskRead, TaskUpdate, ImportPayload
-from models import Task
-from crud import create_task, list_tasks, get_task, update_task, delete_task
+from schemas import TaskCreate, TaskRead, TaskUpdate, ImportPayload, BlackoutPeriodCreate, BlackoutPeriodRead, BlackoutPeriodUpdate
+from models import Task, BlackoutPeriod
+from crud import create_task, list_tasks, get_task, update_task, delete_task, create_blackout_period, list_blackout_periods, get_blackout_period, update_blackout_period, delete_blackout_period
 from printing import ThermalPrinter
 from scheduling import schedule_task, start as start_scheduler
 from utils import now_tz, to_aware
@@ -144,6 +144,44 @@ def api_print_test():
         for part in msg:
             s.sendall(part)
     return {"message": "Test print sent", "target": f"{host}:{port}"}
+
+# Blackout Period endpoints
+@API.get("/blackout-periods", response_model=List[BlackoutPeriodRead])
+def api_list_blackout_periods():
+    return list_blackout_periods()
+
+@API.post("/blackout-periods", response_model=BlackoutPeriodRead)
+def api_create_blackout_period(payload: BlackoutPeriodCreate):
+    b = BlackoutPeriod(**payload.dict())
+    b.start_date = to_aware(b.start_date)
+    b.end_date = to_aware(b.end_date)
+    return create_blackout_period(b)
+
+@API.get("/blackout-periods/{blackout_id}", response_model=BlackoutPeriodRead)
+def api_get_blackout_period(blackout_id: int):
+    b = get_blackout_period(blackout_id)
+    if not b:
+        raise HTTPException(404, "Blackout period not found")
+    return b
+
+@API.patch("/blackout-periods/{blackout_id}", response_model=BlackoutPeriodRead)
+def api_update_blackout_period(blackout_id: int, payload: BlackoutPeriodUpdate):
+    data = {k: v for k, v in payload.dict().items() if v is not None}
+    if "start_date" in data and data["start_date"] is not None:
+        data["start_date"] = to_aware(data["start_date"])
+    if "end_date" in data and data["end_date"] is not None:
+        data["end_date"] = to_aware(data["end_date"])
+    updated = update_blackout_period(blackout_id, **data)
+    if not updated:
+        raise HTTPException(404, "Blackout period not found")
+    return updated
+
+@API.delete("/blackout-periods/{blackout_id}")
+def api_delete_blackout_period(blackout_id: int):
+    ok = delete_blackout_period(blackout_id)
+    if not ok:
+        raise HTTPException(404, "Blackout period not found")
+    return {"ok": True}
 
 # Register API router
 app.include_router(API)

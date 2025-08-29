@@ -105,5 +105,5 @@ export default function CalendarView({ tasks }: Props) {
     return () => cal.destroy()
   }, [tasks])
 
-  return <div className="rounded-2xl bg-white shadow p-4"> <div ref={ref} /> </div>
+  return <div className="rounded-2xl bg-white dark:bg-gray-800 shadow p-4"> <div ref={ref} className="dark:[&_.fc-theme-standard_.fc-scrollgrid]:!border-gray-600 dark:[&_.fc-theme-standard_td]:!border-gray-600 dark:[&_.fc-theme-standard_th]:!border-gray-600 dark:[&_.fc-col-header-cell]:!bg-gray-700 dark:[&_.fc-col-header-cell-cushion]:!text-white dark:[&_.fc-daygrid-day]:!bg-gray-800 dark:[&_.fc-daygrid-day-number]:!text-white dark:[&_.fc-event]:!bg-blue-600" /> </div>
 }

@@ -19,27 +19,27 @@ export default function TaskForm({ value, onSubmit }: Props) {
       title, description, start_at: new Date(startAt).toISOString(), until: null, rrule, auto_print: autoPrint, is_active: isActive
     })}}>
       <div>
-        <label className="block text-sm font-medium">Title</label>
-        <input className="mt-1 w-full rounded-xl border p-2" value={title} onChange={e=>setTitle(e.target.value)} required />
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+        <input className="mt-1 w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-2" value={title} onChange={e=>setTitle(e.target.value)} required />
       </div>
       <div>
-        <label className="block text-sm font-medium">Description</label>
-        <textarea className="mt-1 w-full rounded-xl border p-2" value={description} onChange={e=>setDescription(e.target.value)} />
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+        <textarea className="mt-1 w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-2" value={description} onChange={e=>setDescription(e.target.value)} />
       </div>
       <div>
-        <label className="block text-sm font-medium">Start at</label>
-        <input type="datetime-local" className="mt-1 w-full rounded-xl border p-2" value={startAt} onChange={e=>setStartAt(e.target.value)} />
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Start at</label>
+        <input type="datetime-local" className="mt-1 w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-2" value={startAt} onChange={e=>setStartAt(e.target.value)} />
       </div>
       <div>
-        <label className="block text-sm font-medium">RRULE (optional)</label>
-        <input placeholder="FREQ=DAILY;INTERVAL=1" className="mt-1 w-full rounded-xl border p-2" value={rrule} onChange={e=>setRrule(e.target.value)} />
-        <p className="text-xs text-gray-500 mt-1">Examples: Daily: FREQ=DAILY;INTERVAL=1 — Weekly: FREQ=WEEKLY;BYDAY=MO,TH — Monthly: FREQ=MONTHLY;BYMONTHDAY=1</p>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">RRULE (optional)</label>
+        <input placeholder="FREQ=DAILY;INTERVAL=1" className="mt-1 w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-2" value={rrule} onChange={e=>setRrule(e.target.value)} />
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Examples: Daily: FREQ=DAILY;INTERVAL=1 — Weekly: FREQ=WEEKLY;BYDAY=MO,TH — Monthly: FREQ=MONTHLY;BYMONTHDAY=1</p>
       </div>
       <div className="flex gap-4">
-        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={autoPrint} onChange={e=>setAutoPrint(e.target.checked)} /> Auto print</label>
-        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={isActive} onChange={e=>setIsActive(e.target.checked)} /> Active</label>
+        <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300"><input type="checkbox" checked={autoPrint} onChange={e=>setAutoPrint(e.target.checked)} /> Auto print</label>
+        <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300"><input type="checkbox" checked={isActive} onChange={e=>setIsActive(e.target.checked)} /> Active</label>
       </div>
-      <button className="px-4 py-2 rounded-xl bg-black text-white shadow">Save task</button>
+      <button className="px-4 py-2 rounded-xl bg-black dark:bg-white text-white dark:text-black shadow hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors">Save task</button>
     </form>
   )
 }
