@@ -11,6 +11,86 @@ type Props = {
   tasks: Task[]
 }
 
+function parseRrule(rruleStr: string, dtstart: Date, until?: Date | null): Date[] {
+  if (!rruleStr) return [dtstart]
+  
+  const dates: Date[] = []
+  const now = new Date()
+  const endDate = until || new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000) // 1 year from now if no until
+  
+  // Parse basic RRULE components
+  const parts = rruleStr.split(';')
+  const ruleObj: Record<string, string> = {}
+  
+  parts.forEach(part => {
+    const [key, value] = part.split('=')
+    if (key && value) {
+      ruleObj[key] = value
+    }
+  })
+  
+  const freq = ruleObj.FREQ
+  const interval = parseInt(ruleObj.INTERVAL || '1')
+  
+  if (!freq) return [dtstart]
+  
+  let current = new Date(dtstart)
+  const maxOccurrences = 100 // Prevent infinite loops
+  let count = 0
+  
+  while (current <= endDate && count < maxOccurrences) {
+    dates.push(new Date(current))
+    count++
+    
+    switch (freq) {
+      case 'DAILY':
+        current.setDate(current.getDate() + interval)
+        break
+      case 'WEEKLY':
+        current.setDate(current.getDate() + (7 * interval))
+        break
+      case 'MONTHLY':
+        current.setMonth(current.getMonth() + interval)
+        break
+      case 'YEARLY':
+        current.setFullYear(current.getFullYear() + interval)
+        break
+      default:
+        return [dtstart]
+    }
+  }
+  
+  return dates
+}
+
+function generateTaskEvents(tasks: Task[]) {
+  const events: Array<{id: string, title: string, start: string}> = []
+  
+  tasks.forEach(task => {
+    const startDate = new Date(task.start_at)
+    const untilDate = task.until ? new Date(task.until) : null
+    
+    if (task.rrule) {
+      const occurrences = parseRrule(task.rrule, startDate, untilDate)
+      occurrences.forEach((date, index) => {
+        events.push({
+          id: `${task.id}_${index}`,
+          title: task.title,
+          start: date.toISOString().split('T')[0],
+        })
+      })
+    } else {
+      events.push({
+        id: String(task.id),
+        title: task.title,
+        start: startDate.toISOString().split('T')[0],
+      })
+    }
+  })
+  
+  return events
+}
+
 export default function CalendarView({ tasks }: Props) {
   const ref = React.useRef<HTMLDivElement>(null)
   React.useEffect(() => {
@@ -19,11 +99,7 @@ export default function CalendarView({ tasks }: Props) {
       plugins: [dayGridPlugin, interactionPlugin],
       initialView: 'dayGridMonth',
       height: 'auto',
-      events: tasks.map(t => ({
-        id: String(t.id),
-        title: t.title,
-        start: t.start_at,
-      })),
+      events: generateTaskEvents(tasks),
     })
     cal.render()
     return () => cal.destroy()
