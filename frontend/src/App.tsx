@@ -5,6 +5,7 @@ import CalendarView from './components/CalendarView'
 import TaskForm from './components/TaskForm'
 import TaskList from './components/TaskList'
 import ImportJson from './components/ImportJson'
+import ExportJson from './components/ExportJson'
 import BlackoutPeriods from './components/BlackoutPeriods'
 import ThemeToggle from './components/ThemeToggle'
 import SearchFilter from './components/SearchFilter'
@@ -61,10 +62,11 @@ export default function App() {
             </div>
             <BlackoutPeriods refresh={() => load(searchQuery, selectedCategory)} />
             <ImportJson onDone={() => load(searchQuery, selectedCategory)} />
+            <ExportJson />
           </div>
         </div>
 
-        <footer className="text-center text-xs text-gray-500 dark:text-gray-400">© TaskPrinter</footer>
+        <footer className="text-center text-xs text-gray-500 dark:text-gray-400">© TaskPrinter v1.3.0</footer>
       </div>
     </div>
   )

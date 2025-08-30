@@ -6,10 +6,15 @@ NAMESPACE="${DOCKERHUB_NAMESPACE:-chefwest}"
 IMAGE="${IMAGE_NAME:-receipttasker}"
 VITE_API_BASE="${VITE_API_BASE:-/api}"
 
-# Args
+# Args - use VERSION file as default if no tag provided
 TAG="${1:-}"
 if [[ -z "${TAG}" ]]; then
-  echo "Usage: $0 <tag>"; exit 1
+  if [[ -f "VERSION" ]]; then
+    TAG=$(cat VERSION)
+    echo "Using version from VERSION file: ${TAG}"
+  else
+    echo "Usage: $0 <tag> (or create VERSION file)"; exit 1
+  fi
 fi
 
 FQIN="docker.io/${NAMESPACE}/${IMAGE}:${TAG}"

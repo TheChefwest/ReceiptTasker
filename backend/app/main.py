@@ -126,6 +126,26 @@ def api_import(payload: ImportPayload):
         schedule_task(t)
     return {"count": len(created)}
 
+@API.get("/export")
+def api_export():
+    tasks = list_tasks()
+    export_data = {
+        "tasks": [
+            {
+                "title": task.title,
+                "description": task.description,
+                "start_at": task.start_at.isoformat(),
+                "until": task.until.isoformat() if task.until else None,
+                "rrule": task.rrule,
+                "auto_print": task.auto_print,
+                "is_active": task.is_active,
+                "category": task.category
+            }
+            for task in tasks
+        ]
+    }
+    return export_data
+
 @API.get("/print-test")
 def api_print_test():
     """
