@@ -64,11 +64,13 @@ class ThermalPrinter:
                 p.text("\n")
                 p.set(align="center", width=2, height=1)
                 desc_lines = self._wrap_text_smart(description, 24)  # Match separator width
-                for line in desc_lines:
-                    p.text(f"{line}\n")
+                for i, line in enumerate(desc_lines):
+                    if i == len(desc_lines) - 1:  # Last line
+                        p.text(f"{line}")
+                    else:
+                        p.text(f"{line}\n")
             
-            # Final spacing and cut
-            p.text("\n")
+            # Cut
             p.cut()
         finally:
             try:

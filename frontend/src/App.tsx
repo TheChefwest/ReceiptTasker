@@ -66,7 +66,7 @@ export default function App() {
           </div>
         </div>
 
-        <footer className="text-center text-xs text-gray-500 dark:text-gray-400">© TaskPrinter v1.3.1</footer>
+        <footer className="text-center text-xs text-gray-500 dark:text-gray-400">© TaskPrinter v1.3.2</footer>
       </div>
     </div>
   )
