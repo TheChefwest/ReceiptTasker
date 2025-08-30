@@ -23,6 +23,8 @@ engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 
 def init_db():
     SQLModel.metadata.create_all(engine)
+    # Run migrations
+    migrate_db()
 
 def get_engine():
     return engine
@@ -44,3 +46,22 @@ def session_scope():
     """
     with Session(engine) as session:
         yield session
+
+def migrate_db():
+    """Run database migrations"""
+    from sqlalchemy import text
+    
+    with Session(engine) as session:
+        # Check if category column exists in task table
+        try:
+            # Try to select category - if it fails, the column doesn't exist
+            session.exec(text("SELECT category FROM task LIMIT 1"))
+        except Exception:
+            # Add category column with default value
+            try:
+                session.exec(text("ALTER TABLE task ADD COLUMN category VARCHAR DEFAULT 'other'"))
+                session.commit()
+                print("✅ Added category column to task table")
+            except Exception as e:
+                print(f"Migration error: {e}")
+                session.rollback()

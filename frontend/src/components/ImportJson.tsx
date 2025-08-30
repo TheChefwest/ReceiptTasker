@@ -2,7 +2,7 @@ import React from 'react'
 import { api } from '../api'
 
 export default function ImportJson({ onDone }: { onDone: ()=>void }) {
-  const [text, setText] = React.useState('{\n  "tasks": [\n    {\n      "title": "Feed the fish",\n      "description": "Pinch of flakes",\n      "start_at": "2025-08-17T08:00:00Z",\n      "rrule": "FREQ=DAILY;INTERVAL=1",\n      "auto_print": true,\n      "is_active": true\n    }\n  ]\n}')
+  const [text, setText] = React.useState('{\n  "tasks": [\n    {\n      "title": "Feed the fish",\n      "description": "Pinch of flakes",\n      "start_at": "2025-08-17T08:00:00Z",\n      "rrule": "FREQ=DAILY;INTERVAL=1",\n      "auto_print": true,\n      "is_active": true,\n      "category": "kitchen"\n    }\n  ]\n}')
 
   const submit = async () => {
     await api.post('/import', JSON.parse(text))
