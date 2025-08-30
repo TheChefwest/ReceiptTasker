@@ -110,7 +110,7 @@ def api_print_task(task_id: int):
     t = get_task(task_id)
     if not t:
         raise HTTPException(404, "Task not found")
-    printer.print_task(t.title, t.description)
+    printer.print_task(t.title, t.description, t.category)
     return {"printed": True}
 
 @API.post("/import")

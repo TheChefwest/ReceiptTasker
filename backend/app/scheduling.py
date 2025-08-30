@@ -77,7 +77,7 @@ def _run_and_reschedule(task_id: int):
         return
     
     if task.auto_print:
-        printer.print_task(task.title, task.description)
+        printer.print_task(task.title, task.description, task.category)
     # update last fired
     update_task(task.id, last_fired_at=current_time)
     # schedule next
